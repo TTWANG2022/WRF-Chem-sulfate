@@ -15,7 +15,7 @@ CONTAINS
                h2oaj,h2oai,nu3,ac3,cor3,asulf,ahno3,anh3,cvaro1,cvaro2, &
                cvalk1,cvole1,cvapi1,cvapi2,cvlim1,cvlim2,vcsulf_old,    &
                vdrog3,                                                  &
-               kemit,photo_no2,awc_h,                                   & !wtt, add photo_no2
+               kemit,photo_no2,                                         & !wtt, add photo_no2
                ids,ide, jds,jde, kds,kde,                               &
                ims,ime, jms,jme, kms,kme,                               &
                its,ite, jts,jte, kts,kte                                )
@@ -63,8 +63,6 @@ CONTAINS
 !wtt
    REAL,  DIMENSION( ims:ime , kms:kme , jms:jme )         ,        &
           INTENT(IN) ::   photo_no2
-   REAL,  DIMENSION( ims:ime , kms:kme , jms:jme )         ,        &
-          INTENT(INOUT ) ::   awc_h
 !wtt, above
 
       REAL drog_in(ldrog)                                    ! anthropogenic AND
@@ -197,7 +195,6 @@ CONTAINS
    INTEGER :: i,j,k,l,debug_level
 
 REAL cblk_so2,convfac3,photo_forTMI !wtt
-REAL awc_h_0 !wtt
 
 !
 ! convert advected aerosol variables to ug/m3 from mixing ratio
@@ -404,7 +401,6 @@ REAL awc_h_0 !wtt
       cblk(1,VCORN    ) =   chem(i,k,j,p_corn)
 
       cblk_so2       =   chem(i,k,j,p_so2)  !wtt, ppm
-      awc_h_0          = -9999.9
 
 
       if(debug_level.ge.1)then
@@ -424,9 +420,8 @@ REAL awc_h_0 !wtt
       CALL rpmmod3(nspcsda,blksize,k,dtstep,10.*p(k),t(k),rh(k),nitrate_in,nh3_in, &
         vsulf_in,so4rat_in,drog_in,ldrog,condvap_in,ncv,nacv,eeci_in,eecj_in, &
         eorgi_in,eorgj_in,epm25i,epm25j,epmcoarse,soilrat_in,cblk,i,j,k, &
-        cblk_so2,convfac3,photo_forTMI,awc_h_0) !wtt, add cblk_so2,convfac3,photo_forTMI
+        cblk_so2,convfac3,photo_forTMI) !wtt, add cblk_so2,convfac3,photo_forTMI
 
-        awc_h(i,k,j)=awc_h_0 !wtt
       chem(i,k,j,p_so2) = cblk_so2     !wtt
       chem(i,k,j,p_so4aj) = cblk(1,VSO4AJ   )
       chem(i,k,j,p_so4ai) = cblk(1,VSO4AI   )
@@ -1419,7 +1414,7 @@ END SUBROUTINE sorgam_depdriver
         dgacc,dgcor,pmassn,pmassa,pmassc,pdensn,pdensa,pdensc,knnuc,knacc, &
         kncor,fconcn,fconca,fconcn_org,fconca_org,dmdt,dndt,cgrn3,cgra3,urn00, &
         ura00,brna01,c30,deltaso4a,igrid,jgrid,kgrid,  &
-        cblk_so2,convfac3,photo_forTMI,awc_h_0) !wtt
+        cblk_so2,convfac3,photo_forTMI) !wtt
 
 
 
@@ -1583,7 +1578,7 @@ END SUBROUTINE sorgam_depdriver
 ! intermodal 3rd moment transfer r
       REAL deltaso4a(blksize) !                                  sulfate aerosol by condensation   [ u
 
-      REAL cblk_so2,convfac3,photo_forTMI,awc_h_0 !wtt
+      REAL cblk_so2,convfac3,photo_forTMI !wtt
 
 !wtt, add local parameters
       REAL frac_mn,solu_mn,mw_mn
@@ -1672,7 +1667,6 @@ if (blkrh(1) .gt.0.35.and.conc_H.gt.1.e-16.and.cblk(1,VH2OAI).gt.1.e-16.and.cblk
      conc_fe3i = min(conc_fe3i,conc_fe3_lim)
      conc_fe3j = min(conc_fe3j,conc_fe3_lim)
 
-     awc_h_0 = conc_H
 !--------------------------------------------
     k0_het =11079.3*exp(-11576.08*(1.0/blkta(1)-1.0/298.0))
 
@@ -5736,7 +5730,7 @@ end if
     SUBROUTINE rpmmod3(nspcsda,blksize,layer,dtsec,pres,temp,relhum, &
         nitrate_in,nh3_in,vsulf_in,so4rat_in,drog_in,ldrog,condvap_in,ncv, &
         nacv,eeci_in,eecj_in,eorgi_in,eorgj_in,epm25i,epm25j,epmcoarse,    &
-        soilrat_in,cblk,igrid,jgrid,kgrid,cblk_so2,convfac3,photo_forTMI,awc_h_0) !wtt, add cblk_so2,convfac3,photo_forTMI
+        soilrat_in,cblk,igrid,jgrid,kgrid,cblk_so2,convfac3,photo_forTMI) !wtt, add cblk_so2,convfac3,photo_forTMI
 
 
 
@@ -5984,7 +5978,7 @@ end if
       INTEGER ii, iimap(8)
       DATA iimap/1, 2, 18, 19, 21, 22, 23, 24/
 
-      REAL cblk_so2,convfac3,photo_forTMI,awc_h_0 !wtt
+      REAL cblk_so2,convfac3,photo_forTMI !wtt
 
 !   begin body  of program box
 
@@ -6091,7 +6085,7 @@ end if
         amu,dgnuc,dgacc,dgcor,pmassn,pmassa,pmassc,pdensn,pdensa,pdensc,knnuc, &
         knacc,kncor,fconcn,fconca,fconcn_org,fconca_org,dmdt,dndt,cgrn3,cgra3, &
         urn00,ura00,brna01,brna31,deltaso4a,igrid,jgrid,kgrid, &
-        cblk_so2,convfac3,photo_forTMI,awc_h_0) !wtt
+        cblk_so2,convfac3,photo_forTMI) !wtt
 
 ! *** write output
 
